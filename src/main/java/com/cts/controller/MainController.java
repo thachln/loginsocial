@@ -199,6 +199,7 @@ public class MainController {
             // If user login by social networking.
             // This method saves social networking information to the UserConnection table.
             providerSignInUtils.doPostSignUp(registered.getUserName(), request);
+            System.out.println("User Name : " + registered.getFirstName());
         }
   
         // After registration is complete, automatic login.

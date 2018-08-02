@@ -1,62 +1,144 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-   <head>
-      <title>Login</title>
-   </head>
-   <body>
-      <!-- Include _menu.html -->
-      <th:block th:include="/_menu"></th:block>
-       
-      <h1>Login</h1>
-       
-       <h2>Social Login</h2>
-  
-        <a th:href="@{/auth/facebook}">Face Book</a>
-        <br />
-        <a th:href="@{/auth/google}">Google</a>
-        <br />
-         
-       
-      <!-- /login?error=true -->
-      <div th:if="${#request.getParameter('error') == 'true'}"
-            style="color:red;margin:10px 0px;">
-         Login Failed!!!<br />
-         Reason :
-         <span th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null}"
-            th:utext="${#session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}">
-                Static summary
-         </span>
-            
-      </div>
-      
-      <h3>Enter user name and password:</h3>
-      <form name='f' th:action="@{/j_spring_security_check}" method='POST'>
-         <table>
-            <tr>
-               <td>User:</td>
-               <td><input type='text' name='username' value=''></td>
-            </tr>
-            <tr>
-               <td>Password:</td>
-               <td><input type='password' name='password' /></td>
-            </tr>
-            <tr>
-               <td>Remember Me?</td>
-               <td><input type="checkbox" name="remember-me" /></td>
-            </tr>            
-            <tr>
-               <td><input name="submit" type="submit" value="submit" /></td>
-            </tr>
-         </table>
-      </form>
-       
-      <br>
-      Username/pass:
-      <ul>
-        <li>dbuser1/123</li>
-        <li>dbadmin1/123</li>
-      </ul>  
-       
-   </body>
+<head>
+<title>Login</title>
+</head>
+<body>
+	<!-- Include _menu.html -->
+	<th:block th:include="/_menu"></th:block>
+	<script>
+  // This is called with the results from from FB.getLoginStatus().
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(JSON.stringify(response));
+    // The response object is returned with a status field that lets the
+    // app know the current login status of the person.
+    // Full docs on the response object can be found in the documentation
+    // for FB.getLoginStatus().
+    if (response.status === 'connected') {
+      // Logged into your app and Facebook.
+      testAPI();
+    } else {
+      // The person is not logged into your app or we are unable to tell.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this app.';
+    }
+  }
+
+  // This function is called when someone finishes with the Login
+  // Button.  See the onlogin handler attached to it in the sample
+  // code below.
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+
+  }
+
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1187705141366404',
+      cookie     : true,  // enable cookies to allow the server to access 
+                          // the session
+      xfbml      : true,  // parse social plugins on this page
+      version    : 'v2.8' // use graph api version 2.8
+    });
+
+    // Now that we've initialized the JavaScript SDK, we call 
+    // FB.getLoginStatus().  This function gets the state of the
+    // person visiting this page and can return one of three states to
+    // the callback you provide.  They can be:
+    //
+    // 1. Logged into your app ('connected')
+    // 2. Logged into Facebook, but not your app ('not_authorized')
+    // 3. Not logged into Facebook and can't tell if they are logged into
+    //    your app or not.
+    //
+    // These three cases are handled in the callback function.
+
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    }, {scope: 'email'});
+ 
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', {fields: 'id,name,email'}, function(response) {
+    	  console.log('Successful login for 1: ' + JSON.stringify(response));
+      console.log('Successful login for name 2: ' + response.name);
+      console.log('Successful login for id 3: ' + response.id);
+      console.log('Successful login for email 4: ' + response.email);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
     
+  }
+</script>
+
+	<h1>Login</h1>
+
+	<h2>Social Login</h2>
+
+	<!-- 	<a th:href="@{/auth/facebook}">Face Book</a> -->
+	<br />
+	<a th:href="@{/auth/google}">Google</a>
+	<br />
+
+
+	<!-- /login?error=true -->
+	<div th:if="${#request.getParameter('error') == 'true'}"
+		style="color: red; margin: 10px 0px;">
+		Login Failed!!!<br /> Reason : <span
+			th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null}"
+			th:utext="${#session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}">
+			Static summary </span>
+
+	</div>
+
+	<h3>Enter user name and password:</h3>
+	<form name='f' th:action="@{/j_spring_security_check}" method='POST'>
+		<table>
+			<tr>
+				<td>User:</td>
+				<td><input type='text' name='username' value=''></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input type='password' name='password' /></td>
+			</tr>
+			<tr>
+				<td>Remember Me?</td>
+				<td><input type="checkbox" name="remember-me" /></td>
+			</tr>
+			<tr>
+				<fb:login-button scope="public_profile,email"
+					onlogin="checkLoginState();">
+				</fb:login-button>
+				<td><input name="submit" type="submit" value="submit" /></td>
+			</tr>
+		</table>
+	</form>
+
+	<span id="status"></span>
+	<br> Username/pass:
+	<ul>
+		<li>dbuser1/123</li>
+		<li>dbadmin1/123</li>
+	</ul>
+
+</body>
+
+
 </html>
